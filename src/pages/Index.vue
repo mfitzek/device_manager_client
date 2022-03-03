@@ -1,13 +1,10 @@
-
-
 <template>
-    <form>
-        <input placeholder="Email address" type="email">
-    </form>
+    <q-page>
+        <h1>Index Page</h1>
+    </q-page>
 </template>
 
 <script lang="ts">
-
 import { defineComponent } from 'vue'
 
 export default defineComponent({
