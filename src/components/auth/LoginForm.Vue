@@ -30,7 +30,7 @@ export default defineComponent({
         async function login() {
 
             try{
-                const req = await axios.post("/auth/login", {email, password});
+                const req = await axios.post("/auth/login", {email:email.value, password: password.value});
                 console.log(req.data);
                 verified = true;
             }catch(error : any){
