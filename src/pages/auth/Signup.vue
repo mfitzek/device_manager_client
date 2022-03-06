@@ -3,14 +3,14 @@
         <div class="col-auto">
             <q-card>
                 <q-card-section >
-                    <div class="text-h4 text-center">Login</div>
+                    <div class="text-h4 text-center">Sign up</div>
                 </q-card-section>
                 <q-separator></q-separator>
                 <q-card-section>
-                    <login-form></login-form>
+                    <signup-form @sign-up="signUp"></signup-form>
                 </q-card-section>
                 <q-card-section class="text-center">
-                    Not a member? <router-link :to="{name: 'SignUp'}">Signup</router-link>
+                    Already have account? <router-link :to="{name: 'Login'}">Login</router-link>
                 </q-card-section>
             </q-card>
         </div>
@@ -19,14 +19,20 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import LoginForm from "@components/auth/LoginForm.vue";
+import SignupForm from "@components/auth/SignUpForm.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
     components: {
-        LoginForm,
+        SignupForm,
     },
     setup() {
-        return {};
+        const router = useRouter();
+        async function signUp(){
+            router.push({name: "Login"});
+        }
+
+        return {signUp};
     },
 });
 </script>

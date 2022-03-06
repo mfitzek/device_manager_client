@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import axios from "@service/axios_api";
 
 export default defineComponent({
     setup() {
@@ -27,8 +28,15 @@ export default defineComponent({
         }
 
         async function login() {
-            console.log("Login with name", email.value);
-            //TODO: LOGIN
+
+            try{
+                const req = await axios.post("/auth/login", {email, password});
+                console.log(req.data);
+                verified = true;
+            }catch(error : any){
+                console.log(error);
+
+            }
 
             first = false;
         }
