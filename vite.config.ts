@@ -79,8 +79,24 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls }
     }),
-
     quasar()
   ],
+
+  resolve:{
+	extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
+  },
+
+  server: {
+	port: 4000,
+	proxy: {
+		'/api': {
+			target: 'http://localhost:3000',
+			changeOrigin: true,
+			secure: false,      
+			ws: true,
+			rewrite: (path) => path.replace(/^\/api/, '')
+		}
+	}
+  }
 
 })

@@ -10,6 +10,7 @@
   "dependencies": {
     "@quasar/extras": "^1.12.5",
     "@quasar/vite-plugin": "^1.0.5",
+    "axios": "^0.26.0",
     "path": "^0.12.7",
     "quasar": "^2.5.5",
     "url": "^0.11.0",
