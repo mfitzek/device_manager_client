@@ -1,10 +1,10 @@
 <template>
-    <q-form @submit="login">
-        <q-input v-model="username" label="Username or Email" :rules="[(val) => (val && val.length > 0) || 'Username is required']"></q-input>
-        <q-input v-model="password" lazy-rules label="Password" type="password" :rules="[(val) => (val && val.length > 0) || 'Password is required', verify]"></q-input>
+    <q-form @submit="login" class="login-form">
+        <q-input v-model="email" required name="email" autocomplete="email" label="Email" :rules="[(val) => (val && val.length > 0) || 'Email is required']"></q-input>
+        <q-input v-model="password" required name="password" autocomplete="password" lazy-rules label="Password" type="password" :rules="[(val) => (val && val.length > 0) || 'Password is required', verify]"></q-input>
 
-        <div class="row justify-between">
-            <q-btn class="col-12 col-md-auto" label="Log in" type="submit" color="primary"></q-btn>
+        <div class="q-mt-lg row justify-between">
+            <q-btn class="col-12 " label="Log in" type="submit" color="primary"></q-btn>
         </div>
     </q-form>
 </template>
@@ -14,7 +14,7 @@ import { defineComponent, ref } from "vue";
 
 export default defineComponent({
     setup() {
-        const username = ref(null);
+        const email = ref(null);
         const password = ref(null);
 
         let first = true;
@@ -23,21 +23,23 @@ export default defineComponent({
         function verify() {
             if (first) return true;
 
-            return verified || "Wrong username or password";
+            return verified || "Wrong email or password";
         }
 
         async function login() {
-            console.log("Login with name", username.value);
+            console.log("Login with name", email.value);
             //TODO: LOGIN
 
             first = false;
         }
 
-        return { username, password, login, verify };
+        return { email, password, login, verify };
     },
 });
 </script>
 
 <style scoped>
-
+    .login-form{
+        min-width: 375px;
+    }
 </style>
