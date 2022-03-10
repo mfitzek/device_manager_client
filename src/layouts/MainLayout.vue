@@ -6,12 +6,9 @@
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
-          </q-avatar>
-          Title
+          SDD Store
         </q-toolbar-title>
-
+ 
         <ToolbarUser></ToolbarUser>
 
       </q-toolbar>
@@ -20,10 +17,10 @@
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- drawer content -->
       <q-list>
-        <q-item clickable>
-          <q-item-section>Device</q-item-section>
+        <q-item v-for="(link, index) in links" :key="index" clickable @click="link.click">
+          <q-item-section>{{link.name}}</q-item-section>
           <q-item-section avatar>
-            <q-icon name="fas fa-microchip"></q-icon>
+            <q-icon :name="link.icon"></q-icon>
           </q-item-section>
         </q-item>
       </q-list>
@@ -40,6 +37,7 @@
 
 import ToolbarUser from "@components/app/toolbar/User.vue";
 import { defineComponent, ref } from 'vue'
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: 'MainLayout',
@@ -51,13 +49,23 @@ export default defineComponent({
   setup () {
     const leftDrawerOpen = ref(false);
 
+    const router = useRouter();
+
+    const links = [
+      {name: "Device", icon: "fas fa-microchip", click: ()=> router.push({name: "DeviceList"})},
+      {name: "Data", icon: "fas fa-database", click: ()=> router.push({name: "DeviceList"})},
+      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DeviceList"})},
+    ]
+    
+
     function toggleLeftDrawer(){
       leftDrawerOpen.value = !leftDrawerOpen.value;
     }
 
     return {
       leftDrawerOpen,
-      toggleLeftDrawer
+      toggleLeftDrawer,
+      links
     }
     }
 })
