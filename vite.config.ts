@@ -9,64 +9,20 @@ import { ViteAliases  } from 'vite-aliases'
 
 
 const alias_cfg = {
-	/**
-	 * Relative path to the project Directory
-	 */
 	dir: 'src',
-
-	/**
-	 * Prefix Symbol for the Aliases
-	 */
 	prefix: '@',
-
-	/**
-	 * Allow Searching for Subdirectories
-	 */
 	deep: true,
-
-	/**
-	 * Search Depthlevel for Subdirectories
-	 */
 	depth: 1,
-
-	/**
-	 * Creates a Logfile in `logs` Folder
-	 * Will be relative to project Directory
-	 */
 	allowLogging: false,
-
-	/**
-	 * Allow global project Directory alias
-	 */
 	allowGlobalAlias: true,
-
-	/**
-	 * Turns Duplicates into camelCased Path Aliases
-	 */
 	adjustDuplicates: false,
 
-	/**
-	 * Generates Paths in IDE Config File
-	 * Works with JS oder TS
-	 * For Typescript: set `useTypescript` true
-	 */
 	useConfig: true,
-
-	/**
-	 * Used Paths in JS/TS Configs will now be relative to baseUrl
-	 */
 
 	useRelativePaths: true,
 
-	/**
-	 * Will generate Paths in tsconfig
-	 * Used in Combination with `useConfig`
-	 */
 	useTypescript: true,
 
-	/**
-	 * Root path of Vite project
-	 */
 	root: process.cwd()
 };
 
@@ -83,7 +39,7 @@ export default defineConfig({
   ],
 
   resolve:{
-	extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue'],
+	extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue', '.Vue'],
   },
 
   server: {
