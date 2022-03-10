@@ -4,6 +4,10 @@
 
 
 <script setup lang="ts">
+  import { provide } from 'vue';
+  import auth from '@store/auth';
+
+  provide("auth", auth);
 
 </script>
 

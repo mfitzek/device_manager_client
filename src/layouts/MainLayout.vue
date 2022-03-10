@@ -11,8 +11,10 @@
           </q-avatar>
           Title
         </q-toolbar-title>
-      </q-toolbar>
 
+        <ToolbarUser></ToolbarUser>
+
+      </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
@@ -36,15 +38,14 @@
 
 <script lang="ts">
 
-
-
+import ToolbarUser from "@components/app/toolbar/User.vue";
 import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'MainLayout',
 
   components: {
-
+    ToolbarUser
   },
 
   setup () {

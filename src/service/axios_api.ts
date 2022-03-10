@@ -1,12 +1,25 @@
 import axios, { AxiosInstance } from "axios";
 
 
+class AxiosApi{
+    private static instance: AxiosApi;
 
-const instance: AxiosInstance = axios.create({
-    baseURL: "/api",
+    public api: AxiosInstance;
 
-});
+    private constructor() { 
+        this.api = axios.create({
+            baseURL: "/api",
+        });
+        
+        
+    }
 
+    public static getInstance(): AxiosApi{
+        if(!AxiosApi.instance){
+            AxiosApi.instance = new AxiosApi();
+        }
+        return AxiosApi.instance;
+    }
+}
 
-
-export default instance;
+export default AxiosApi;
