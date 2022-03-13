@@ -3,7 +3,9 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
     
 
-          { path: '', name: "DeviceList", component: ()=> import("@pages/device/DeviceList.vue")},
+          { path: '', name: "DeviceDetail", component: ()=> import("@pages/device/DeviceDetail.vue")},
+          { path: 'attr', name: "DeviceAttributes", component: ()=> import("@pages/device/DeviceAttributes.vue")},
+          { path: 'connection', name: "DeviceConnection", component: ()=> import("@pages/device/DeviceConnection.vue")},
           //{ path: '/login', name: 'Login', component: LoginPage},
           //{ path: '/signup', name: 'SignUp', component: () => import('@pages/auth/SignUp.vue') },
           //{ path: '/device', meta: {requireAuth: true, auth_level: 1}, component: () => import('layouts/DeviceLayout.vue') , children: DeviceRoutes}

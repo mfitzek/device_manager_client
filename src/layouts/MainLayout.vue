@@ -52,9 +52,9 @@ export default defineComponent({
     const router = useRouter();
 
     const links = [
-      {name: "Device", icon: "fas fa-microchip", click: ()=> router.push({name: "DeviceList"})},
-      {name: "Data", icon: "fas fa-database", click: ()=> router.push({name: "DeviceList"})},
-      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DeviceList"})},
+      {name: "Device", icon: "fas fa-microchip", click: ()=> router.push({name: "DeviceDetail"})},
+      {name: "Data", icon: "fas fa-database", click: ()=> router.push({name: "DeviceDetail"})},
+      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DeviceDetail"})},
     ]
     
 
