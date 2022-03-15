@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
         children: [
           { path: '', name: "Index page",component: Index},
           { path: '/login', name: 'Login', component: LoginPage},
-          { path: '/signup', name: 'SignUp', component: () => import('@pages/auth/SignUp.vue') },
+          { path: '/signup', name: 'SignUp', component: () => import('@pages/auth/Signup.vue') },
           { path: '/device', meta: {requireAuth: true, auth_level: 1}, component: () => import('@layouts/DeviceLayout.vue') , children: DeviceRoutes}
         ],
 
