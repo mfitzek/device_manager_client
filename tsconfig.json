@@ -42,6 +42,9 @@
             ],
             "@app/*": [
                 "./src/components/app/*"
+            ],
+            "@device/*": [
+                "./src/components/device/*"
             ]
         }
     },
