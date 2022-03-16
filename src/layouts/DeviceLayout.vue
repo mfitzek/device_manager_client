@@ -25,7 +25,7 @@
         </div>
         <div class="row">
             <div class="col-3">
-                <q-table :columns="columns" :rows="data"></q-table>
+                <q-table :columns="columns" :rows="data" @row-click="row_click"></q-table>
             </div>
             <div class="col-9">
                 <q-card class="q-ml-md q-pa-md">
@@ -37,8 +37,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
+
+import device_store from "@store/device";
+import AxiosApi from "@/service/axios_api";
+import {Device} from "@store/device";
+
+
+const api = AxiosApi.getInstance().api;
 
 export default defineComponent({
     setup() {
@@ -57,42 +64,44 @@ export default defineComponent({
                 case "device": router.push({name: "DeviceDetail"}); break;
                 case "attributes": router.push({name: "DeviceAttributes"}); break;
                 case "connection": router.push({name: "DeviceConnection"}); break;
+                case "add": router.push({name: "DeviceCreate"}); break;
             }
-
-
-
         });
 
+        const data = ref([]);
 
-        const data = [
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-            { name: "test", connection: "MQTT" },
-        ];
 
-        return { tab, search, columns, data };
+        async function row_click(item:any, row: any, index: Number){
+
+            await device_store.fetch_device(row.id);
+            
+            if(tab.value == "add"){
+                tab.value = "detail";
+                router.push({name: "DeviceDetail"});
+            }
+        }
+
+
+        onBeforeMount(async ()=>{
+            try {
+                const resp = await api.get("/device");
+                const devices = resp.data;
+
+                data.value = devices.map((dev: any) =>{
+                    return {
+                        id: dev.id,
+                        name: dev.name,
+                        connection: "Not Implemented"
+                    }
+                })
+
+
+            } catch (error) {
+                console.log("Fetching device list error", error);
+            }
+        });
+
+        return { tab, search, columns, data , row_click};
     },
 });
 </script>
