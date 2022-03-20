@@ -87,11 +87,13 @@ export default defineComponent({
                 const resp = await api.get("/device");
                 const devices = resp.data;
 
+                console.log(devices);
+
                 data.value = devices.map((dev: any) =>{
                     return {
                         id: dev.id,
                         name: dev.name,
-                        connection: "Not Implemented"
+                        connection: dev.connection?.type.name || "Not configured"
                     }
                 })
 
