@@ -1,7 +1,6 @@
 import { reactive, readonly } from "vue";
 import AxiosApi from "@/service/axios_api";
 
-
 export interface Attribute {
     id?: any;
     name: string;
@@ -83,17 +82,37 @@ async function remove_device(id: any) {
     }
 }
 
-
-
-async function add_attribute(id: any, attribute: Attribute){
+async function add_attribute(attribute: Attribute) {
     try {
-        await api.post(`/device/${id}/attributes`, attribute);
-        fetch_device(id);
+        let dev_id = state.current_device!.id;
+        await api.post(`/device/${dev_id}/attributes`, attribute);
+        fetch_device(dev_id);
     } catch (error) {
         console.log(error);
     }
 }
 
+async function update_attribute(attribute: Attribute) {
+    try {
+        let dev_id = state.current_device!.id;
+        let attr_id = attribute.id;
 
+        await api.patch(`/device/${dev_id}/attributes/${attr_id}`, attribute);
+        fetch_device(dev_id);
+    } catch (error) {
+        console.log("Update attribute err", error);
+    }
+}
 
-export default { state: readonly(state), fetch_device, create_device, update_device, remove_device, fetch_device_list, add_attribute };
+async function delete_attribute(attr_id: any) {
+    try {
+        let dev_id = state.current_device!.id;
+
+        await api.delete(`/device/${dev_id}/attributes/${attr_id}`);
+        fetch_device(dev_id);
+    } catch (error) {
+        console.log("Deleting attribute err", error);
+    }
+}
+
+export default { state: readonly(state), fetch_device, create_device, update_device, remove_device, fetch_device_list, add_attribute, update_attribute, delete_attribute };

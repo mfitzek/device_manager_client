@@ -100,13 +100,12 @@ export default defineComponent({
         function update_click(){
             if(new_attr.value){
 
-                let device = {...device_store.state.current_device};
                 let attribute: Attribute = {
                     name: name.value,
                     type: selection.value,
                 }
                 
-                device_store.add_attribute(device.id!, attribute);
+                device_store.add_attribute(attribute);
 
             }else{
                 let attribute:Attribute = {
@@ -115,14 +114,14 @@ export default defineComponent({
                     type:selection.value,
                 }
 
-                console.log(attribute);
+                device_store.update_attribute(attribute);
 
             }
         }
 
         function delete_click(){
             let attr_id = selected!.id;
-            console.log(attr_id);
+            device_store.delete_attribute(attr_id);
         }
 
 
