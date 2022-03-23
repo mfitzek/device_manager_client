@@ -20,7 +20,7 @@
                 </q-item>
                 <q-separator></q-separator>
                 <q-item clickable>
-                    <q-item-section>Logout</q-item-section>
+                    <q-item-section @click="logout">Logout</q-item-section>
                 </q-item>
 
             </q-list>
@@ -56,16 +56,19 @@ export default defineComponent({
     setup() {
        
         const username = computed(()=>{
-                return auth_store.state.username?? "#";
-
+            return auth_store.state.username?? "#";
         });
 
         const email = computed(()=>{
             return auth_store.state.email?? "#"
         });
 
+        function logout(){
+            auth_store.logout();
+        }
 
-        return { is_auth: auth_store.is_authenticated, ...links(), username, email};
+
+        return { is_auth: auth_store.is_authenticated, ...links(), username, email, logout};
     },
 });
 </script>

@@ -86,9 +86,6 @@ function logout(){
 }
 
 
-const to_export = { state: readonly(state), is_authenticated, login, signup };
-
-export type auth_store = typeof to_export;
 
 
-export default to_export;
+export default { state: readonly(state), is_authenticated, login, signup, logout };
