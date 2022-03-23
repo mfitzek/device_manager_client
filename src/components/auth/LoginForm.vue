@@ -20,16 +20,14 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { inject } from "vue";
-import {auth_store} from "@store/auth";
+import auth_store from "@store/auth";
 
 
 export default defineComponent({
     setup() {
-        const email = ref(null);
-        const password = ref(null);
+        const email = ref("");
+        const password = ref("");
 
-        const auth = inject<auth_store>("auth");
 
         let first = true;
         let verified = false;
@@ -41,9 +39,8 @@ export default defineComponent({
         }
 
         async function login() {
-            verified = await auth.login(email.value, password.value);
+            verified = await auth_store.login(email.value, password.value);
             first = false;
-            console.log(auth.is_authenticated());
         }
 
         return { email, password, login, verify };

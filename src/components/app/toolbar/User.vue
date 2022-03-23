@@ -36,8 +36,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, computed, ref } from "vue";
-import { auth_store } from "@/store/auth";
+import { defineComponent, computed, ref } from "vue";
+import  auth_store  from "@/store/auth";
 import { useRouter } from "vue-router";
 
 function links() {
@@ -54,19 +54,18 @@ function links() {
 
 export default defineComponent({
     setup() {
-        const auth = inject("auth") as auth_store;
        
         const username = computed(()=>{
-                return auth.state.username?? "#";
+                return auth_store.state.username?? "#";
 
         });
 
         const email = computed(()=>{
-            return auth.state.email?? "#"
+            return auth_store.state.email?? "#"
         });
 
 
-        return { is_auth: auth.is_authenticated, ...links(), username, email};
+        return { is_auth: auth_store.is_authenticated, ...links(), username, email};
     },
 });
 </script>

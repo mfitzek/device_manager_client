@@ -1,6 +1,7 @@
 import { reactive, readonly } from "vue";
 
 import AxiosApi from "@service/axios_api";
+import axios, { AxiosError } from "axios";
 
 const api = AxiosApi.getInstance().api;
 
@@ -39,6 +40,20 @@ function is_authenticated() {
     return false;
 }
 
+async function signup(email: string, username:string, password: string){
+    try {
+        const req = await api.post("/auth/signup", {email, username, password});
+        console.log(req.data);
+
+    } catch (error: any | AxiosError) {
+        if(axios.isAxiosError(error)){
+            if(error.response?.data){
+                throw error.response?.data;
+            }
+        }
+    }
+}
+
 async function login(email: string, password: string) {
    logout();
     try {
@@ -71,7 +86,7 @@ function logout(){
 }
 
 
-const to_export = { state: readonly(state), is_authenticated, login };
+const to_export = { state: readonly(state), is_authenticated, login, signup };
 
 export type auth_store = typeof to_export;
 

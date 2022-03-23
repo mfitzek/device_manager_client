@@ -5,7 +5,9 @@
             name="username"
             autocomplete="username"
             label="Username"
-            :rules="[(val) => (val && val.length > 0) || 'Username is required', existing_username]"
+            :rules="[(val) => (val && val.length > 0) || 'Username is required']"
+            :error-message="existing_username"
+            :error="existing_username!=undefined "
         ></q-input>
         <q-input
             v-model="email"
@@ -13,7 +15,9 @@
             label="Email"
             type="email"
             autocomplete="email"
-            :rules="[(val) => (val && val.length > 0) || 'Email is required', existing_email]"
+            :rules="[(val) => (val && val.length > 0) || 'Email is required']"
+            :error-message="existing_email"
+            :error="existing_email!=undefined "
         ></q-input>
         <q-input
             v-model="password"
@@ -33,10 +37,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { QForm } from "quasar";
-import api from "@service/axios_api";
-import { AxiosError } from "axios";
+import auth from "@store/auth"
 
 export default defineComponent({
 
@@ -45,25 +48,31 @@ export default defineComponent({
     setup(_, ctx) {
         const myForm = ref<QForm | null>(null);
 
-        const username = ref(null);
-        const email = ref(null);
-        const password_confirm = ref(null);
-        const password = ref(null);
+        const username = ref("");
+        const email = ref("");
+        const password_confirm = ref("");
+        const password = ref("");
 
         let first = true;
 
-        let email_errors = false;
-        let username_errors = false;
 
-        function existing_email() {
-            if (first) return true;
-            return !email_errors || "Email is already used";
-        }
+        let errors = reactive<{email?: string,username?: string }>({});
 
-        function existing_username() {
-            if (first) return true;
-            return !username_errors || "Username is already used";
-        }
+        let existing_email = computed(()=>{
+            return errors.email;
+        });
+
+        let existing_username = computed(()=>{
+            return errors.username;
+        });
+
+        watch(email, (newEmail)=>{
+            errors.email = undefined;
+        });
+
+        watch(username, (newUsername)=>{
+            errors.username = undefined;
+        });
 
         function password_confirmation() {
             return !password.value || password.value == password_confirm.value || "Passwords must match";
@@ -77,23 +86,19 @@ export default defineComponent({
             }
 
             if (valid) {
-                const data = { username: username.value, email: email.value, password: password.value };
                 try {
-                    const resp = await api.post("/auth/signup", data);
-                    console.log(resp.data);
-                    //TODO: Toast message Success
-                    ctx.emit("signUp", resp.data);
-                    
-                } catch (error: any) {
-                    if(error.response?.data?.errors){
-                        console.log(error.response.data);
-                        for(let err of error.response.data.errors){
-                            if(err.property == "email"){
-
-                            }
-                        }
+                    await auth.signup(email.value, username.value, password.value);
+                    ctx.emit("signUp", {});
+                } catch (error: any | {email?: string, username?: string}) {
+                    valid = false;
+                    if(error.username || error.email){
+                        errors.username = error.username;
+                        errors.email = error.email;
+                    }else{
+                        console.log(error);
                     }
                 }
+                    
             }
         }
 
