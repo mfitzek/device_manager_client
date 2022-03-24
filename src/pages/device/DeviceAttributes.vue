@@ -122,6 +122,9 @@ export default defineComponent({
         function delete_click(){
             let attr_id = selected!.id;
             device_store.delete_attribute(attr_id);
+            selected = null;
+            new_attr.value = true;
+            name.value = "";
         }
 
 
