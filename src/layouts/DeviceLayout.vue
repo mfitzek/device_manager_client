@@ -37,12 +37,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, onBeforeMount } from "vue";
+import { defineComponent, ref, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 
 import device_store from "@store/device";
 import AxiosApi from "@/service/axios_api";
-import {Device} from "@store/device";
 
 
 const api = AxiosApi.getInstance().api;
@@ -68,8 +67,6 @@ export default defineComponent({
             }
         });
 
-        const data = ref([]);
-
 
         async function row_click(item:any, row: any, index: Number){
 
@@ -81,27 +78,16 @@ export default defineComponent({
             }
         }
 
-
-        onBeforeMount(async ()=>{
-            try {
-                const resp = await api.get("/device");
-                const devices = resp.data;
-
-                console.log(devices);
-
-                data.value = devices.map((dev: any) =>{
+        const data = computed(()=>{
+            return device_store.state.device_list.map((dev: any) =>{
                     return {
                         id: dev.id,
                         name: dev.name,
                         connection: dev.connection?.type.name || "Not configured"
                     }
-                })
-
-
-            } catch (error) {
-                console.log("Fetching device list error", error);
-            }
+                });
         });
+
 
         return { tab, search, columns, data , row_click};
     },
