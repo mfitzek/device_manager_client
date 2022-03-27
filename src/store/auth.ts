@@ -43,7 +43,6 @@ function is_authenticated() {
 async function signup(email: string, username:string, password: string){
     try {
         const req = await api.post("/auth/signup", {email, username, password});
-        console.log(req.data);
 
     } catch (error: any | AxiosError) {
         if(axios.isAxiosError(error)){
@@ -64,14 +63,35 @@ async function login(email: string, password: string) {
             state.username = req.data.username;
             state.auth_token = req.data.token;
             state.expires_at = new Date(req.data.expires_at);
-
-            api.defaults.headers.common['Authorization'] = `Bearer ${state.auth_token}`
             
+            api.defaults.headers.common['Authorization'] = `Bearer ${state.auth_token}`;
+
+            localStorage.setItem("auth", JSON.stringify(state));
         }
         return true;
     } catch (error) {
         console.log(error);
         return false;
+    }
+}
+
+
+function init_load(){
+    const data = localStorage.getItem("auth");
+
+    if(data){
+        const parsed: IAuthState = JSON.parse(data);
+        state.auth_token = parsed.auth_token;
+        state.user_id = parsed.user_id;
+        state.username = parsed.username;
+        state.email = parsed.email;
+        state.expires_at = new Date(parsed.expires_at!);
+        api.defaults.headers.common['Authorization'] = `Bearer ${state.auth_token}`;
+        
+        if(!is_authenticated()){
+            logout();
+        }
+
     }
 }
 
@@ -82,10 +102,12 @@ function logout(){
     state.auth_token = undefined;
     state.expires_at = undefined;
 
+    localStorage.removeItem("auth");
+
     delete api.defaults.headers.common["Authorization"];
 }
 
 
 
 
-export default { state: readonly(state), is_authenticated, login, signup, logout };
+export default { state: readonly(state), is_authenticated, login, signup, logout, init_load };

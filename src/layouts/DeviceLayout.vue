@@ -14,7 +14,7 @@
                         <q-tab name="device" icon="fas fa-microchip" label="Device" />
                         <q-tab name="attributes" icon="feed" label="Attributes" />
                         <q-tab name="connection" icon="cable" label="Connection" />
-                        <q-tab name="data" icon="fas fa-database" label="Data" />
+                        <q-tab name="data" icon="fas fa-database" label="Data"/>
                     </q-tabs>
                     <q-space />
                     <q-tabs v-model="tab" class="text-primary">
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed } from "vue";
+import { defineComponent, ref, watch, computed, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 
 import device_store from "@store/device";
@@ -57,8 +57,7 @@ export default defineComponent({
             { name: "connection", field: "connection", label: "Connection" },
         ];
 
-        watch(tab, (value)=>{
-
+        watch(tab, (value, old)=>{
             switch(value){
                 case "device": router.push({name: "DeviceDetail"}); break;
                 case "attributes": router.push({name: "DeviceAttributes"}); break;
@@ -83,9 +82,16 @@ export default defineComponent({
                     return {
                         id: dev.id,
                         name: dev.name,
-                        connection: dev.connection?.type.name || "Not configured"
+                        connection: dev.connection
                     }
                 });
+        });
+
+
+        onBeforeMount(async ()=>{
+            tab.value = "add";
+            await device_store.fetch_device_list();
+            
         });
 
 

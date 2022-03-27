@@ -7,6 +7,8 @@
   import { provide } from 'vue';
   import auth from '@store/auth';
 
+  
+  auth.init_load();
   provide("auth", auth);
 
 </script>

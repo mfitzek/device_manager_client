@@ -7,19 +7,30 @@ export interface Attribute {
     type: "number" | "string" | "object";
 }
 
+export interface AttributeMQTTMap{
+    id?: number,
+    path: string,
+    attributeID: number 
+}
+
+
+export interface ConnectionMQTT{
+    id: number,
+    url: string,
+    clientID: string,
+    username?: string,
+    password?: string,
+    AttributeMQTTMap: [AttributeMQTTMap]
+}
+
 export interface Device {
     id?: any;
     name: string;
     location?: string;
     description?: string;
     attributes?: Attribute[];
-    connection?: {
-        id: any;
-        type: {
-            id: any;
-            name: string;
-        };
-    };
+    connection: string,
+    ConnectionMQTT? : ConnectionMQTT
 }
 
 interface DeviceState {
