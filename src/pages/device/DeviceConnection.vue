@@ -2,7 +2,7 @@
     <div>
         <q-select v-model="type" :options="options" label="Connection type" outlined emit-value map-options/>
 
-        <mqtt-connection v-if="type=='mqtt'" @update="update_connection" />
+        <mqtt-connection v-if="type=='mqtt'" @update="mqtt_update_connection" />
 
     
 
@@ -40,14 +40,12 @@ export default defineComponent({
         });
 
 
-
-
-        async function update_connection(event: any){
+        async function mqtt_update_connection(event: any){
             console.log(event);
         }
        
 
-        return {type, options, mqtt, update_connection}
+        return {type, options, mqtt, mqtt_update_connection}
     }
 })
 </script>

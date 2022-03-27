@@ -32,6 +32,10 @@
 import { defineComponent, ref, SetupContext } from "vue";
 
 export default defineComponent({
+
+
+    emits: ["update"],
+
     setup(pros: {}, context: SetupContext) {
         const url = ref("");
         const client = ref("");
