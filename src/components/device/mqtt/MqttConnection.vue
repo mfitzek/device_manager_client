@@ -19,20 +19,28 @@
 
     <q-table title="Map attributes" :columns="columns" :rows="rows">
         <template #top-right>
-            <q-btn label="Edit" color="primary"></q-btn>
+            <q-btn label="Edit" color="primary" @click="editMap"></q-btn>
         </template>
     </q-table>
 
     <q-btn class="q-mt-sm" label="Update connection" color="primary" @click="update"></q-btn>
-    <q-btn class="q-mt-sm q-ml-sm" label="Test connection" color="green"></q-btn>
+    <q-btn class="q-mt-sm q-ml-sm" label="Test connection" color="green" disable></q-btn>
+
+    <AttributeMapDialog ref="edit_dialog" />
 
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, SetupContext } from "vue";
 
-export default defineComponent({
+import AttributeMapDialog, {IExposeMqttMap} from "./AttributesMapMQTT.vue";
 
+export default defineComponent({
+    
+
+    components: {
+        AttributeMapDialog
+    },
 
     emits: ["update"],
 
@@ -65,7 +73,13 @@ export default defineComponent({
             });
         }
 
-        return { url, client, username, pass, columns, rows, update};
+        const edit_dialog = ref<IExposeMqttMap | null>(null);
+
+        function editMap(){
+            edit_dialog.value?.open_dialog();
+        }
+
+        return { url, client, username, pass, columns, rows, update, editMap, edit_dialog};
     },
 });
 </script>
