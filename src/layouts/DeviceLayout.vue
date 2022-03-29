@@ -11,10 +11,10 @@
             <div class="col-9">
                 <q-toolbar color="primary">
                     <q-tabs v-model="tab" class="text-primary">
-                        <q-tab name="device" icon="fas fa-microchip" label="Device" />
-                        <q-tab name="attributes" icon="feed" label="Attributes" />
-                        <q-tab name="connection" icon="cable" label="Connection" />
-                        <q-tab name="data" icon="fas fa-database" label="Data"/>
+                        <q-tab name="device" icon="fas fa-microchip" label="Device" :disable="!selected_device"/>
+                        <q-tab name="attributes" icon="feed" label="Attributes" :disable="!selected_device"/>
+                        <q-tab name="connection" icon="cable" label="Connection" :disable="!selected_device"/>
+                        <q-tab name="data" icon="fas fa-database" label="Data" :disable="!selected_device"/>
                     </q-tabs>
                     <q-space />
                     <q-tabs v-model="tab" class="text-primary">
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch, computed, onBeforeMount } from "vue";
+import { defineComponent, ref, watch, computed, onBeforeMount, reactive } from "vue";
 import { useRouter } from "vue-router";
 
 import device_store from "@store/device";
@@ -52,6 +52,13 @@ export default defineComponent({
         const tab = ref("device");
         const search = ref(null);
 
+
+        const selected_device = computed(()=>{
+            return device_store.state.current_device;
+        });
+
+
+
         const columns = [
             { name: "name", field: "name", label: "Device", align: "left" },
             { name: "connection", field: "connection", label: "Connection" },
@@ -63,6 +70,13 @@ export default defineComponent({
                 case "attributes": router.push({name: "DeviceAttributes"}); break;
                 case "connection": router.push({name: "DeviceConnection"}); break;
                 case "add": router.push({name: "DeviceCreate"}); break;
+            }
+        });
+
+        watch(selected_device, (value)=>{
+            if(!value){
+                tab.value =  "add";
+               // router.push({name: "DeviceCreate"});
             }
         });
 
@@ -95,7 +109,7 @@ export default defineComponent({
         });
 
 
-        return { tab, search, columns, data , row_click};
+        return { tab, search, columns, data , row_click, selected_device};
     },
 });
 </script>
