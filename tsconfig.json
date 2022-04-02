@@ -45,6 +45,9 @@
             ],
             "@device/*": [
                 "./src/components/device/*"
+            ],
+            "@types/*": [
+                "./src/types/*"
             ]
         }
     },

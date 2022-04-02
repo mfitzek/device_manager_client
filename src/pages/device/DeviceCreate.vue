@@ -31,6 +31,8 @@
 import { defineComponent, ref, watch } from 'vue'
 import device_store from "@store/device";
 import { useRouter } from 'vue-router';
+import { IDeviceShort } from '@/types/device';
+import auth from '@/store/auth';
 
 export default defineComponent({
     setup () {
@@ -42,13 +44,14 @@ export default defineComponent({
         const router = useRouter();
 
         async function create_device(){
-            const device = {
+
+            const device: IDeviceShort = {
+                ownerID: auth.state.user_id,
                 name: name.value,
                 description: description.value,
-                location: location.value
+                location: location.value,
+                connection: "http",
             }
-
-            console.log(device);
 
             await device_store.create_device(device);
             router.push({name: "DeviceDetail"});

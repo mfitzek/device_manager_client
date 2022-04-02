@@ -15,11 +15,11 @@
             <div class="col-8 q-gutter-sm">
               <q-input v-model="path" label="Path" outlined placeholder="eg. /building1/room2/temp"></q-input>
               <q-btn label="Add" color="green" icon="add" @click="add_path" :disable="disable_add"></q-btn>
-              <q-table :columns="map_columns" :rows="map">
+              <q-table :columns="map_columns" :rows="rows">
                 <template v-slot:body-cell-action="props">
                   <q-td :props="props">
                     <!-- <q-btn dense round flat color="grey" icon="edit"></q-btn> -->
-                    <q-btn dense round flat color="red" icon="delete" @click="remove_path(props.row)"></q-btn>
+                    <q-btn dense round flat color="red" icon="delete" @click="remove_path(props.rowIndex)"></q-btn>
                   </q-td>          
                 </template>
               </q-table>
@@ -38,9 +38,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref, toRefs, reactive } from 'vue'
+import { defineComponent, watch, ref, toRefs, reactive, onMounted } from 'vue'
 import device_store from "@store/device";
 import { computed } from '@vue/reactivity';
+import { IAttributesMapMQTT } from '@/types/device';
 
 export interface IExposeMqttMap{
     open_dialog(): void
@@ -54,14 +55,22 @@ export default defineComponent({
 
     emits: ["update"],
 
+    props: {
+      map: Array
+    },
+
     setup (props, context) {
 
 
-        const show_dialog = ref(true);
+        const show_dialog = ref(false);
 
         function open_dialog(){
             show_dialog.value = true;
         }
+
+        const attributes_map = computed(()=>{
+          return props.map as IAttributesMapMQTT[];
+        });
 
         const attr_columns = [
           {name: "name", label: "Attribute", field: "name",  align: "left"},
@@ -75,37 +84,28 @@ export default defineComponent({
 
         const selected_attr = ref();
         const path = ref("");
-        
-        const map = ref<{name: string, path: string, attributeID: number}[]>([]);
-
 
         const disable_add = computed(()=>{
           return !(selected_attr.value && Object.keys(selected_attr.value).length);
         });
 
-        const attribute_map = computed(()=>{
-          return device_store.state.current_device?.ConnectionMQTT?.AttributeMQTTMap || [];
-        });
 
         const attributes = computed(()=>{
           return device_store.state.current_device?.attributes || [];
         })
 
 
-        watch(attribute_map, (value)=>{
-          if(value){
-            const data = value.map(row=>{
+        const rows = computed(()=>{
+          return attributes_map.value.map(m_row=>{
+              const attr = device_store.state.current_device!.attributes?.find(a=> a.id == m_row.attributeID);
               return {
-                name: attributes.value.find(f=> f.id == row.attributeID) || "",
-                path: row.path,
-                attributeID: row.attributeID
+                  id: m_row.id,
+                  name: attr!.name,
+                  path: m_row.path,
+                  attributeID: m_row.attributeID
               }
-            });
-            console.log(data);
-          }
+            }) || [];
         });
-
-
 
         function row_click(event:any, row: any, index: number ){
           selected_attr.value = row;
@@ -115,29 +115,31 @@ export default defineComponent({
         function add_path(){
           if(selected_attr.value && Object.keys(selected_attr.value).length && path.value.length){
             const selected = selected_attr.value[0];
-            map.value.push({
-              name: selected.name,
-              attributeID: selected.id,
-              path: path.value
-            });
+            
+            let data: IAttributesMapMQTT[] = [
+              ...attributes_map.value,
+              {
+                attributeID: selected.id,
+                path: path.value
+              }
+            ]
 
-            context.emit("update", map);
+            context.emit("update", data);
           }
         }
 
-        function remove_path(row:any){
-          const idx = map.value.indexOf(row);
-          map.value.splice(idx,1);
-          context.emit("update", map);
+        function remove_path(row: number){
+          let copy = [...attributes_map.value];
+          copy.splice(row, 1);
+          context.emit("update", copy);
         }
-
 
 
 
 
         context.expose({open_dialog});
 
-        return {show_dialog, attr_columns, map_columns, attributes, selected_attr,  path, add_path, remove_path, row_click, disable_add, map}
+        return {show_dialog, attr_columns, map_columns, attributes, selected_attr,  path, add_path, remove_path, row_click, disable_add, rows}
     }
 })
 </script>

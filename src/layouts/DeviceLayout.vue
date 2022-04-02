@@ -42,6 +42,7 @@ import { useRouter } from "vue-router";
 
 import device_store from "@store/device";
 import AxiosApi from "@/service/axios_api";
+import { IDeviceShort } from "@/types/device";
 
 
 const api = AxiosApi.getInstance().api;
@@ -57,14 +58,12 @@ export default defineComponent({
             return device_store.state.current_device;
         });
 
-
-
         const columns = [
             { name: "name", field: "name", label: "Device", align: "left" },
             { name: "connection", field: "connection", label: "Connection" },
         ];
 
-        watch(tab, (value, old)=>{
+        watch(tab, (value)=>{
             switch(value){
                 case "device": router.push({name: "DeviceDetail"}); break;
                 case "attributes": router.push({name: "DeviceAttributes"}); break;
@@ -92,7 +91,7 @@ export default defineComponent({
         }
 
         const data = computed(()=>{
-            return device_store.state.device_list.map((dev: any) =>{
+            return device_store.state.device_list.map((dev: IDeviceShort) =>{
                     return {
                         id: dev.id,
                         name: dev.name,

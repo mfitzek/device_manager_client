@@ -53,16 +53,17 @@
 import { computed, defineComponent, ref } from 'vue';
 
 import device_store from "@store/device";
-import { Attribute } from '@store/device';
+import { AttributeType, IAttribute } from '@/types/device';
+
 
 export default defineComponent({
     setup() {
         const search = ref("");
 
         const name = ref("");
-        const selection = ref<"number" | "string" | "object">("string");
+        const selection = ref<AttributeType>("string");
 
-        let selected: Attribute | null = null;
+        let selected: IAttribute | null = null;
         let new_attr = ref(true);
 
 
@@ -100,7 +101,7 @@ export default defineComponent({
         function update_click(){
             if(new_attr.value){
 
-                let attribute: Attribute = {
+                let attribute: IAttribute = {
                     name: name.value,
                     type: selection.value,
                 }
@@ -108,7 +109,7 @@ export default defineComponent({
                 device_store.add_attribute(attribute);
 
             }else{
-                let attribute:Attribute = {
+                let attribute: IAttribute = {
                     id: selected!.id,
                     name: name.value,
                     type:selection.value,
@@ -120,7 +121,7 @@ export default defineComponent({
         }
 
         function delete_click(){
-            let attr_id = selected!.id;
+            let attr_id = selected!.id!;
             device_store.delete_attribute(attr_id);
             selected = null;
             new_attr.value = true;

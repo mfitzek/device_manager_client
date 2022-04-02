@@ -33,7 +33,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, watch } from 'vue'
 import device_store from "@store/device";
-import  {Device} from "@store/device";
+import { IDeviceData, IDeviceShort } from '@/types/device';
+
 
 export default defineComponent({
     setup () {
@@ -44,32 +45,39 @@ export default defineComponent({
 
 
         watch(device_store.state, ({current_device})=>{
-           set_data(current_device);
+
+            if(current_device){
+                set_data(current_device);
+            }
+
+
         });
 
-        function set_data(device: any){
-            name.value = device?.name ?? "";
-            description.value = device?.description ?? "";
-            location.value = device?.location ?? "";
+        function set_data(device: IDeviceData){
+            name.value = device.name;
+            description.value = device.description?? "";
+            location.value = device.location ?? "";
         }
 
 
         async function update_device(){
-            const data = {
-                id: null,
-                ...device_store.state.current_device,
+            const data: IDeviceShort = {
+                id: device_store.state.current_device?.id!,
+                ownerID: device_store.state.current_device?.ownerID!,
                 name: name.value,
                 description: description.value,
-                location: location.value
+                location: location.value,
+                connection: device_store.state.current_device?.connection.type!
             };
 
-            device_store.update_device(data.id, data);
+            device_store.update_device(data.id!, data);
             
         }
 
 
         onMounted(()=>{
-            set_data(device_store.state.current_device);
+            //if(device_store.)
+            //set_data(device_store.state.current_device);
         });
 
 
