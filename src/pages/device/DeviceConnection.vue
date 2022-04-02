@@ -13,7 +13,7 @@
 import { computed, defineComponent, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import MqttConnection from '@/components/device/mqtt/MqttConnection.vue';
 import device_store from '@/store/device';
-import { IConnection, IConnectionMQTT } from '@/types/device';
+import { IConnection, IConnectionMQTT, IDeviceData } from '@/types/device';
 
 export default defineComponent({
 
@@ -29,19 +29,26 @@ export default defineComponent({
             {label: "MQTT", value: "mqtt"},
             {label: "HTTP", value: "http"},
         ];
-        const connection = reactive<IConnection>(device_store.state.current_device?.connection || {type: "http", mqtt: null});
+        const connection = ref<IConnection>(device_store.state.current_device?.connection || {type: "http", mqtt: null});
 
         async function mqtt_update_connection(event: IConnectionMQTT){
-            type.value = "mqtt";
-            connection.type = "mqtt";
-            connection.mqtt = event;
-
-            device_store.update_connection({...connection});
+            connection.value.type = "mqtt";
+            connection.value.mqtt = event;
+            let data: IConnection = {...connection.value};
+            device_store.update_connection(data);
         }
+
+        
+
+
+        watch(()=>device_store.state.current_device, (dev: IDeviceData | null)=>{
+            type.value = dev?.connection.type ?? "http";
+            if(dev){
+                connection.value = {...dev.connection};
+            }
+
+        }, {immediate: true});
        
-       onBeforeMount(()=>{
-           type.value = connection.type;
-       })
 
         return {type, options, connection, mqtt_update_connection}
     }

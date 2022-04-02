@@ -11,7 +11,7 @@
             <div class="col-9">
                 <q-toolbar color="primary">
                     <q-tabs v-model="tab" class="text-primary">
-                        <q-tab name="device" icon="fas fa-microchip" label="Device" :disable="!selected_device"/>
+                        <q-tab name="detail" icon="fas fa-microchip" label="Device" :disable="!selected_device"/>
                         <q-tab name="attributes" icon="feed" label="Attributes" :disable="!selected_device"/>
                         <q-tab name="connection" icon="cable" label="Connection" :disable="!selected_device"/>
                         <q-tab name="data" icon="fas fa-database" label="Data" :disable="!selected_device"/>
@@ -50,7 +50,7 @@ const api = AxiosApi.getInstance().api;
 export default defineComponent({
     setup() {
         const router = useRouter();
-        const tab = ref("device");
+        const tab = ref("detail");
         const search = ref(null);
 
 
@@ -65,12 +65,12 @@ export default defineComponent({
 
         watch(tab, (value)=>{
             switch(value){
-                case "device": router.push({name: "DeviceDetail"}); break;
+                case "detail": router.push({name: "DeviceDetail"}); break;
                 case "attributes": router.push({name: "DeviceAttributes"}); break;
                 case "connection": router.push({name: "DeviceConnection"}); break;
                 case "add": router.push({name: "DeviceCreate"}); break;
             }
-        });
+        }, {immediate: true});
 
         watch(selected_device, (value)=>{
             if(!value){
@@ -86,7 +86,7 @@ export default defineComponent({
             
             if(tab.value == "add"){
                 tab.value = "detail";
-                router.push({name: "DeviceDetail"});
+                //router.push({name: "DeviceDetail"});
             }
         }
 

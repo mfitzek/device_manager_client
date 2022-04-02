@@ -51,7 +51,7 @@ export default defineComponent({
             }
 
 
-        });
+        }, {immediate: true});
 
         function set_data(device: IDeviceData){
             name.value = device.name;

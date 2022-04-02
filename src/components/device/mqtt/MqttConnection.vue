@@ -1,7 +1,6 @@
 <template>
-
     <q-form autocomplete="false">
-        <div class="row q-mt-sm  q-gutter-x-sm">
+        <div class="row q-mt-sm q-gutter-x-sm">
             <div class="col">
                 <q-input v-model="url" type="text" label="URL" required outlined />
             </div>
@@ -10,13 +9,13 @@
             </div>
         </div>
 
-        <div class="row q-mt-sm q-gutter-x-sm ">
+        <div class="row q-mt-sm q-gutter-x-sm">
             <div class="col">
                 <q-input v-model="username" type="text" label="Username" outlined />
-                </div>
+            </div>
             <div class="col">
                 <q-input v-model="pass" type="password" label="Password" outlined />
-                </div>
+            </div>
         </div>
     </q-form>
 
@@ -30,25 +29,23 @@
     <!-- <q-btn class="q-mt-sm q-ml-sm" label="Test connection" color="green" disable></q-btn> -->
 
     <AttributeMapDialog :map="attributes_map" ref="edit_dialog" @update="map_updated" />
-
 </template>
 
 <script lang="ts">
 import { computed } from "@vue/reactivity";
-import { defineComponent, onBeforeMount, onMounted, ref, SetupContext, reactive } from "vue";
+import { defineComponent, onMounted, ref, SetupContext, reactive, watch } from "vue";
 
-import AttributeMapDialog, {IExposeMqttMap} from "./AttributesMapMQTT.vue";
+import AttributeMapDialog, { IExposeMqttMap } from "./AttributesMapMQTT.vue";
 import device_store from "@store/device";
 import { IConnectionMQTT, IAttributesMapMQTT } from "@/types/device";
 
 export default defineComponent({
-    
     props: {
-        connection: Object
+        connection: Object,
     },
 
     components: {
-        AttributeMapDialog
+        AttributeMapDialog,
     },
 
     emits: ["update"],
@@ -59,69 +56,81 @@ export default defineComponent({
         const username = ref("");
         const pass = ref("");
 
-
         const columns = [
-            { name: "name",label: "Attribute",field: "name", align: "left"},
-            { name: "path",label: "Path",field: "path", align: "left"},
-            { name: "type",label: "Type",field: "type"},
-            ]
+            { name: "name", label: "Attribute", field: "name", align: "left" },
+            { name: "path", label: "Path", field: "path", align: "left" },
+            { name: "type", label: "Type", field: "type" },
+        ];
 
-        const connection = computed<IConnectionMQTT>(()=>{
+        const connection = computed<IConnectionMQTT>(() => {
             return props.connection as IConnectionMQTT;
         });
 
         let attributes_map = reactive<IAttributesMapMQTT[]>([]);
 
+        const rows = computed(() => {
+            return (
+                attributes_map.map((m_row) => {
+                    const attr = device_store.state.current_device!.attributes?.find((a) => a.id == m_row.attributeID);
+                    return {
+                        path: m_row.path,
+                        name: attr?.name,
+                        type: attr?.type,
+                    };
+                }) || []
+            );
+        });
 
-        const rows = computed(()=>{
-            return attributes_map.map(m_row=>{
-                const attr = device_store.state.current_device!.attributes?.find(a=> a.id == m_row.attributeID);
-                return {
-                    path: m_row.path,
-                    name: attr?.name,
-                    type: attr?.type
-                }
-            }) || [];
-        })
-
-        function update(){
+        function update() {
             context.emit("update", {
                 url: url.value,
                 clientID: client.value,
                 username: username.value,
                 password: pass.value,
-                attributes_map: attributes_map.map(obj => { return {...obj}})
+                attributes_map: attributes_map.map((obj) => {
+                    return { ...obj };
+                }),
             });
         }
 
         const edit_dialog = ref<IExposeMqttMap | null>(null);
 
-        function editMap(){
+        function editMap() {
             edit_dialog.value?.open_dialog();
         }
 
-        function map_updated(data: IAttributesMapMQTT[]){
+        function map_updated(data: IAttributesMapMQTT[]) {
             attributes_map.splice(0);
-            for(let m of data){
+            for (let m of data) {
                 attributes_map.push(m);
             }
-
         }
 
-        onMounted(()=>{
-            url.value = connection.value.url;
-            client.value = connection.value.clientID;
-            username.value = connection.value.username?? "";
-            pass.value = connection.value.password?? "";
+        watch(
+            connection,
+            (con) => {
+                attributes_map.splice(0);
+                if (con) {
+                    url.value = con.url;
+                    client.value = con.clientID;
+                    username.value = con.username ?? "";
+                    pass.value = con.password ?? "";
+                    for (let m of con.attributes_map) {
+                        attributes_map.push(m);
+                    }
+                }else{
+                    url.value = "";
+                    client.value = "";
+                    username.value = "";
+                    pass.value = "";
+                }
+            },
+            { immediate: true }
+        );
 
+        onMounted(() => {});
 
-            for(let m of connection.value.attributes_map){
-                attributes_map.push(m);
-            }
-
-        })
-
-        return { url, client, username, pass, columns, rows, update, editMap, edit_dialog, attributes_map, map_updated};
+        return { url, client, username, pass, columns, rows, update, editMap, edit_dialog, attributes_map, map_updated };
     },
 });
 </script>
