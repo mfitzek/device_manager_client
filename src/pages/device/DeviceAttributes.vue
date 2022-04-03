@@ -8,7 +8,7 @@
             <div class="col-9">
                 <div class="row">
                     <div class="col-6">
-                        <q-input v-model="name" type="text" label="Attribute name" outlined />
+                        <q-input v-model="name" type="text" label="Attribute name" outlined :rules="[unique_name]"/>
                     </div>
                 </div>
                 <div class="row q-mt-md">
@@ -23,16 +23,6 @@
                         />
                     </div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-12 q-mt-md">
-                        <q-input
-                            v-model="description"
-                            type="textarea"
-                            label="Description"
-                            outlined
-                        />
-                    </div>
-                </div> -->
             </div>
         </div>
         <div class="row q-mt-md q-col-gutter-sm">
@@ -50,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref,watch} from 'vue';
 
 import device_store from "@store/device";
 import { AttributeType, IAttribute } from '@/types/device';
@@ -65,11 +55,26 @@ export default defineComponent({
 
         let selected: IAttribute | null = null;
         let new_attr = ref(true);
-
+        
 
         const attributes = computed(() => {
             return device_store.state.current_device?.attributes;
         });
+
+
+        watch(()=>device_store.state.current_device, (dev)=>{
+            selected = null;
+            new_attr.value = true;
+        }, {immediate: true})
+
+        function unique_name(name: string){
+            let find = attributes.value?.find(a=>a.name == name);
+            if(find && find != selected){
+                return "Attribute name must be unique";
+            }
+            return true;
+        }
+
 
 
         const table_columns = [
@@ -99,7 +104,11 @@ export default defineComponent({
 
 
         function update_click(){
-            if(new_attr.value){
+            if(unique_name(name.value) !== true){
+                return;
+            }
+
+            if(new_attr.value == true){
 
                 let attribute: IAttribute = {
                     name: name.value,
@@ -129,7 +138,7 @@ export default defineComponent({
         }
 
 
-        return { search, name, selection, select_options, attributes, table_columns, new_attr, delete_click, row_click, add_click, update_click }
+        return { search, name, selection, select_options, attributes, table_columns, new_attr, delete_click, row_click, add_click, update_click, unique_name }
     }
 })
 </script>
