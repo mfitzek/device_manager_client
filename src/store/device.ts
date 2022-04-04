@@ -100,30 +100,14 @@ async function delete_attribute(attr_id: number) {
 }
 
 
-export function add_mqtt_attribute_map(map: IAttributesMapMQTT){
-    if(state.current_device?.connection.mqtt?.attributes_map){
-        state.current_device.connection.mqtt.attributes_map.push(map);
-    }
-}
-
-export function remove_mqtt_attribute_map(map: IAttributesMapMQTT){
-    if(state.current_device?.connection.mqtt?.attributes_map){
-
-        const index = state.current_device?.connection.mqtt?.attributes_map.indexOf(map);
-        if(index){
-            state.current_device?.connection.mqtt?.attributes_map.splice(index,1);
-        }
-    }
-}
-
 export async function update_connection(data: IConnection){
     
     try {
         let dev_id = state.current_device!.id;
         state.current_device = (await api.post(`/device/${dev_id}/connection`, {connection: data})).data;
-        fetch_device_list();
+        await fetch_device_list();
     } catch (error) {
-        console.log("Deleting attribute err", error);
+        console.log("Update connection err", error);
     }
 
 }

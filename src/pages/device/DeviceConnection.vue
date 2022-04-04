@@ -3,6 +3,8 @@
         <q-select v-model="type" :options="options" label="Connection type" outlined emit-value map-options/>
 
         <mqtt-connection :connection="connection.mqtt" v-if="type=='mqtt'" @update="mqtt_update_connection" />
+        <http-connection v-if="type=='http'" @update="http_update"/>
+
 
     
 
@@ -12,13 +14,15 @@
 <script lang="ts">
 import { computed, defineComponent, onBeforeMount, onMounted, reactive, ref, watch } from 'vue'
 import MqttConnection from '@/components/device/mqtt/MqttConnection.vue';
+import HttpConnection from '@/components/device/http/HttpConnection.vue';
 import device_store from '@/store/device';
 import { IConnection, IConnectionMQTT, IDeviceData } from '@/types/device';
 
 export default defineComponent({
 
     components: {
-        MqttConnection
+        MqttConnection,
+        HttpConnection
     },
 
     setup () {
@@ -38,6 +42,11 @@ export default defineComponent({
             device_store.update_connection(data);
         }
 
+        async function http_update(){
+            connection.value.type = "http";
+            let data: IConnection = {...connection.value};
+            device_store.update_connection(data);
+        }
         
 
 
@@ -50,7 +59,7 @@ export default defineComponent({
         }, {immediate: true});
        
 
-        return {type, options, connection, mqtt_update_connection}
+        return {type, options, connection, mqtt_update_connection, http_update}
     }
 })
 </script>
