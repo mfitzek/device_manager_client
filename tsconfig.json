@@ -48,6 +48,9 @@
             ],
             "@types/*": [
                 "./src/types/*"
+            ],
+            "@common/*": [
+                "./src/components/common/*"
             ]
         }
     },

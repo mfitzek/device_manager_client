@@ -1,8 +1,8 @@
 import { reactive, readonly } from "vue";
 import AxiosApi from "@/service/axios_api";
-import { IAttribute, IAttributesMapMQTT, IConnection, IDeviceData, IDeviceShort } from "@/types/device";
+import { IAttribute, IAttributesMapMQTT, IConnection, IDeviceAttributes, IDeviceData, IDeviceShort } from "@/types/device";
 
-
+import qs from "qs";
 
 interface DeviceState {
     current_device: IDeviceData | null;
@@ -34,7 +34,6 @@ async function fetch_device(id: number) {
     }
 }
 
-
 export async function update_device(id: number, device: IDeviceShort) {
     try {
         const resp = await api.patch(`/device/${id}`, device);
@@ -64,7 +63,6 @@ export async function remove_device(id: number) {
         console.log("Removing device error", id, error);
     }
 }
-
 
 async function add_attribute(attribute: IAttribute) {
     try {
@@ -99,28 +97,53 @@ async function delete_attribute(attr_id: number) {
     }
 }
 
-
-export async function update_connection(data: IConnection){
-    
+export async function update_connection(data: IConnection) {
     try {
         let dev_id = state.current_device!.id;
-        state.current_device = (await api.post(`/device/${dev_id}/connection`, {connection: data})).data;
+        state.current_device = (await api.post(`/device/${dev_id}/connection`, { connection: data })).data;
         await fetch_device_list();
     } catch (error) {
         console.log("Update connection err", error);
     }
-
 }
 
+export async function GetDevicesAttributes() {
+    try {
+        let data = (await api.get("/device/attributes")).data;
 
+        return data as IDeviceAttributes[];
+    } catch (error) {
+        console.log("fetch all attributes err", error);
+        return [];
+    }
+}
+
+export async function FetchTelemetry(attributes: number[], date_start?: Date, date_end?: Date) {
+    let req = await api.get("/device/telemetry", {
+        params: {
+            attr: [...attributes],
+            date_end: date_end,
+            date_start: date_start
+        },
+        paramsSerializer: params => {
+            return qs.stringify(params, {arrayFormat: 'repeat'})
+          }
+    });
+
+    return req.data;
+}
 
 // export default { state: readonly(state), fetch_device, create_device, update_device, remove_device, fetch_device_list, add_attribute, update_attribute, delete_attribute };
 
-
-export default { 
+export default {
     state,
-    fetch_device_list, fetch_device,
-    update_device, remove_device, create_device,
-    add_attribute, update_attribute, delete_attribute,
-    update_connection
+    fetch_device_list,
+    fetch_device,
+    update_device,
+    remove_device,
+    create_device,
+    add_attribute,
+    update_attribute,
+    delete_attribute,
+    update_connection,
 };

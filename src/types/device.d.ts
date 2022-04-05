@@ -59,3 +59,10 @@ export interface IConnection {
     mqtt: IConnectionMQTT | null,
 
 }
+
+
+export interface IDeviceAttributes {
+    id: number,
+    name: string,
+    attributes: IAttribute[]
+}
