@@ -14,7 +14,6 @@
                         <q-tab name="detail" icon="fas fa-microchip" label="Device" :disable="!selected_device"/>
                         <q-tab name="attributes" icon="feed" label="Attributes" :disable="!selected_device"/>
                         <q-tab name="connection" icon="cable" label="Connection" :disable="!selected_device"/>
-                        <q-tab name="data" icon="fas fa-database" label="Data" :disable="!selected_device"/>
                     </q-tabs>
                     <q-space />
                     <q-tabs v-model="tab" class="text-primary">
@@ -60,7 +59,7 @@ export default defineComponent({
 
         const columns = [
             { name: "name", field: "name", label: "Device", align: "left" },
-            { name: "connection", field: "connection", label: "Connection" },
+            { name: "type", field: "type", label: "Type" },
         ];
 
         watch(tab, (value)=>{
@@ -95,7 +94,7 @@ export default defineComponent({
                     return {
                         id: dev.id,
                         name: dev.name,
-                        connection: dev.connection
+                        type: device_store.DeviceTypeList[dev.type]
                     }
                 });
         });

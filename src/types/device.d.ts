@@ -2,6 +2,12 @@
 export type ConnectionType = "mqtt" | "http";
 export type AttributeType = "number" | "string" | "object";
 
+
+export enum DeviceType{
+    General = 0
+}
+
+
 export interface IDeviceShort {
 
     id?: number,
@@ -9,6 +15,7 @@ export interface IDeviceShort {
     name: string,
     location: string | null,
     description: string | null,
+    type: DeviceType,
     connection: ConnectionType
 
 }
@@ -20,7 +27,7 @@ export interface IDeviceData {
     name: string,
     location: string | null,
     description: string | null,
-
+    type: DeviceType,
     connection: IConnection,
     attributes: IAttribute[],
 

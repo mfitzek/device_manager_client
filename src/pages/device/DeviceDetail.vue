@@ -11,6 +11,11 @@
             </div>
         </div>
         <div class="row q-mt-md">
+            <div class="col col-md-6">
+                <q-select v-model="type" label="Type" outlined map-options emit-value :options="type_options"/>
+            </div>
+        </div>
+        <div class="row q-mt-md">
             <div class="col">
                 <q-input v-model="description" type="textarea" label="Description" outlined/>
             </div>
@@ -43,6 +48,8 @@ export default defineComponent({
         const description = ref("");
         const location = ref("");
 
+        const type = ref(0);
+
 
         watch(device_store.state, ({current_device})=>{
 
@@ -50,13 +57,21 @@ export default defineComponent({
                 set_data(current_device);
             }
 
-
         }, {immediate: true});
+
+        const type_options = device_store.DeviceTypeList.map((o, idx)=>{
+            return {
+                label: o,
+                value: idx
+            }
+        })
+
 
         function set_data(device: IDeviceData){
             name.value = device.name;
             description.value = device.description?? "";
             location.value = device.location ?? "";
+            type.value = device.type ?? 0;
         }
 
 
@@ -66,6 +81,7 @@ export default defineComponent({
                 ownerID: device_store.state.current_device?.ownerID!,
                 name: name.value,
                 description: description.value,
+                type: type.value,
                 location: location.value,
                 connection: device_store.state.current_device?.connection.type!
             };
@@ -88,7 +104,7 @@ export default defineComponent({
 
 
 
-        return {name, description, location, update_device, remove_device}
+        return {name, description, location, update_device, remove_device, type, type_options}
     }
 })
 </script>

@@ -10,6 +10,13 @@
                 <q-input v-model="location" type="text" label="Location" outlined/>
             </div>
         </div>
+
+        <div class="row q-mt-md">
+            <div class="col col-md-6">
+                <q-select v-model="type" label="Type" outlined map-options emit-value :options="type_options"/>
+            </div>
+        </div>
+
         <div class="row q-mt-md">
             <div class="col">
                 <q-input v-model="description" type="textarea" label="Description" outlined/>
@@ -40,6 +47,14 @@ export default defineComponent({
         const name = ref("");
         const description = ref("");
         const location = ref("");
+        const type = ref(0);
+
+        const type_options = device_store.DeviceTypeList.map((o, idx)=>{
+            return {
+                label: o,
+                value: idx
+            }
+        });
 
         const router = useRouter();
 
@@ -49,6 +64,7 @@ export default defineComponent({
                 ownerID: auth.state.user_id,
                 name: name.value,
                 description: description.value,
+                type: type.value,
                 location: location.value,
                 connection: "http",
             }
@@ -60,7 +76,7 @@ export default defineComponent({
         }
 
 
-        return {name, description, location, create_device}
+        return {name, description, location, create_device, type, type_options}
     }
 })
 </script>

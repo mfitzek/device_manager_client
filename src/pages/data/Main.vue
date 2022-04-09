@@ -115,7 +115,6 @@ export default defineComponent({
         watch(
             range,
             (val) => {
-                console.log("Range watcher", val);
                 if (val == "Last day") {
                     date_end.value = new Date();
                     date_start.value = new Date();
@@ -163,7 +162,6 @@ export default defineComponent({
             const attributes = await FetchTelemetry(ids, start, end);
             let i = 0;
 
-            console.log(attributes);
 
             chartData.value.datasets = attributes.map((a: any) => {
                 return {
@@ -182,9 +180,6 @@ export default defineComponent({
             }
 
             if (date_end.value) options.value!.scales!.x!.max = end;
-
-            console.log(options.value);
-            console.log(chartData.value);
         }
 
         onBeforeMount(async () => {

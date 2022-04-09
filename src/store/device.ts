@@ -16,6 +16,11 @@ const state = reactive<DeviceState>({
     device_list: [],
 });
 
+export const DeviceTypeList = [
+    "General device",
+]
+
+
 async function fetch_device_list() {
     try {
         const resp = await api.get<IDeviceShort[]>(`/device`);
@@ -146,4 +151,5 @@ export default {
     update_attribute,
     delete_attribute,
     update_connection,
+    DeviceTypeList
 };
