@@ -10,6 +10,7 @@ interface ILoginResponse {
     email: string;
     username: string;
     token: string;
+    role: Number;
     expires_at: Date;
 }
 
@@ -19,6 +20,7 @@ interface IAuthState {
     username?: string;
     auth_token?: string;
     expires_at?: Date;
+    role: Number
 }
 
 interface IAuthGetters {
@@ -31,6 +33,7 @@ const state = reactive<IAuthState>({
     username: undefined,
     auth_token: undefined,
     expires_at: undefined,
+    role: 2
 });
 
 function is_authenticated() {
@@ -63,6 +66,7 @@ async function login(email: string, password: string) {
             state.username = req.data.username;
             state.auth_token = req.data.token;
             state.expires_at = new Date(req.data.expires_at);
+            state.role = req.data.role;
             
             api.defaults.headers.common['Authorization'] = `Bearer ${state.auth_token}`;
 
@@ -86,6 +90,7 @@ function init_load(){
         state.username = parsed.username;
         state.email = parsed.email;
         state.expires_at = new Date(parsed.expires_at!);
+        state.role = parsed.role;
         api.defaults.headers.common['Authorization'] = `Bearer ${state.auth_token}`;
         
         if(!is_authenticated()){
@@ -101,6 +106,7 @@ function logout(){
     state.username = undefined;
     state.auth_token = undefined;
     state.expires_at = undefined;
+    state.role = 2;
 
     localStorage.removeItem("auth");
 

@@ -39,6 +39,8 @@
 import { defineComponent, computed, ref } from "vue";
 import  auth_store  from "@/store/auth";
 import { useRouter } from "vue-router";
+import { watch } from "fs";
+import auth from "@/store/auth";
 
 function links() {
     const router = useRouter();
@@ -54,7 +56,8 @@ function links() {
 
 export default defineComponent({
     setup() {
-       
+        
+        const router = useRouter();
         const username = computed(()=>{
             return auth_store.state.username?? "#";
         });
@@ -62,9 +65,10 @@ export default defineComponent({
         const email = computed(()=>{
             return auth_store.state.email?? "#"
         });
-
+        
         function logout(){
             auth_store.logout();
+            router.push({name: "Login"});
         }
 
 

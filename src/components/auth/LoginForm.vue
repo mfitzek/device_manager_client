@@ -21,12 +21,15 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import auth_store from "@store/auth";
+import { useRouter } from "vue-router";
 
 
 export default defineComponent({
     setup() {
         const email = ref("");
         const password = ref("");
+
+        const router = useRouter();
 
 
         let first = true;
@@ -41,6 +44,15 @@ export default defineComponent({
         async function login() {
             verified = await auth_store.login(email.value, password.value);
             first = false;
+            if(verified){
+                const redir = router.currentRoute.value.query["redirect"];
+                console.log(redir);
+                if(redir && redir.toString() != "Login"){
+                    router.push({name: redir.toString()});
+                }else{
+                    router.push({name: "DeviceDetail"})
+                }
+            }
         }
 
         return { email, password, login, verify };
