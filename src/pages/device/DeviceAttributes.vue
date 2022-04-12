@@ -58,7 +58,10 @@ export default defineComponent({
         
 
         const attributes = computed(() => {
-            return device_store.state.current_device?.attributes;
+            return device_store.state.current_device?.attributes.filter(attr=>{
+                return attr.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()) ||
+                       attr.type.toLocaleLowerCase().includes(search.value.toLocaleLowerCase());
+            });
         });
 
 
