@@ -46,7 +46,6 @@ export default defineComponent({
             first = false;
             if(verified){
                 const redir = router.currentRoute.value.query["redirect"];
-                console.log(redir);
                 if(redir && redir.toString() != "Login"){
                     router.push({name: redir.toString()});
                 }else{
