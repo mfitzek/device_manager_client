@@ -54,7 +54,7 @@ export default defineComponent({
     const links = [
       {name: "Device", icon: "fas fa-microchip", click: ()=> router.push({name: "DeviceDetail"})},
       {name: "Data", icon: "fas fa-database", click: ()=> router.push({name: "DataMain"})},
-      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DeviceDetail"})},
+      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DatabaseSettings"})},
     ]
     
 
