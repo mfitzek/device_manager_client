@@ -1,6 +1,6 @@
 import { reactive, readonly } from "vue";
 import AxiosApi from "@/service/axios_api";
-import { IAttribute, IAttributesMapMQTT, IConnection, IDeviceAttributes, IDeviceData, IDeviceShort } from "@/types/device";
+import { IAttribute, IAttributesMapMQTT, IConnection, IDeviceAttributes, IDeviceData, IDeviceShort, DeviceTypeList } from "@/types/device";
 
 import qs from "qs";
 
@@ -9,16 +9,14 @@ interface DeviceState {
     device_list: IDeviceShort[];
 }
 
-const api = AxiosApi.getInstance().api;
+export const api = AxiosApi.getInstance().api;
+
+
 
 const state = reactive<DeviceState>({
     current_device: null,
     device_list: [],
 });
-
-export const DeviceTypeList = [
-    "General device",
-]
 
 
 async function fetch_device_list() {
