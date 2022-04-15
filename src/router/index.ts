@@ -14,6 +14,13 @@ Router.beforeEach((to, from)=>{
     if(to.meta.requireAuth){
 
         if(auth.is_authenticated()){
+            console.log(to.meta.auth_level, auth.state.role);
+
+            if(to.meta.auth_level && auth.state.role < to.meta.auth_level ){
+                return from;
+            }else{
+               
+            }
 
         }else{
             return {name: "Login", query: {redirect: to.name}}

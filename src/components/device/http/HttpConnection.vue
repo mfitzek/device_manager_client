@@ -48,7 +48,11 @@ import { computed } from "@vue/reactivity";
 export default defineComponent({
     emits: ["update"],
     setup(props, ctx) {
-        const device = ref(device_store.state.current_device);
+
+        const device = computed(()=>{
+            return device_store.state.current_device;
+        });
+        //const device = ref(device_store.state.current_device);
 
         const token = computed(()=>{
             return device.value?.connection?.http?.access_token ?? "";
@@ -65,8 +69,8 @@ export default defineComponent({
         }
 
         async function refresh(){
-            api.post(`${device.value?.id}/connection/http/refresh`);
-            device_store.fetch_device(device.value?.id!);
+            await api.post(`device/${device.value?.id}/connection/http/refresh`);
+            await device_store.fetch_device(device.value?.id!);
         }
 
         return { update_connection, device, token, clipboard_copy, refresh };

@@ -22,9 +22,9 @@ const routes: RouteRecordRaw[] = [
           { path: '', name: "Index page",component: Index},
           { path: '/login', name: 'Login', component: LoginPage},
           { path: '/signup', name: 'SignUp', component: () => import('@pages/auth/Signup.vue') },
-          { path: '/device', meta: {requireAuth: true, auth_level: 2}, component: () => import('@layouts/DeviceLayout.vue') , children: DeviceRoutes},
-          { path: '/data', meta: {requireAuth: true, auth_level: 2}, component: () => import('@layouts/DataLayout.vue') , children: DataRoutes},
-          { path: '/settings', meta: {requireAuth: true, auth_level: 0}, component: () => import('@layouts/Settings.vue') , children: SettingsRoutes},
+          { path: '/device', meta: {requireAuth: true, auth_level: 0}, component: () => import('@layouts/DeviceLayout.vue') , children: DeviceRoutes},
+          { path: '/data', meta: {requireAuth: true, auth_level: 0}, component: () => import('@layouts/DataLayout.vue') , children: DataRoutes},
+          { path: '/settings', meta: {requireAuth: true, auth_level: 2}, component: () => import('@layouts/Settings.vue') , children: SettingsRoutes},
         ],
 
     },
