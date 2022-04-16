@@ -50,7 +50,8 @@ export interface IAttribute {
 
     id?: number,
     name: string,
-    type: AttributeType
+    type: AttributeType,
+    telemetry?: ITelemetry[]
 
 }
 

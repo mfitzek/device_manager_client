@@ -35,12 +35,32 @@
                 </div>
             </div>
 
-              <q-tabs class="text-primary">
-                        <q-tab name="stats" icon="description" label="Data" />
-                        <q-tab name="graph" icon="show_chart" label="Graph"  />
-                    </q-tabs>
+            <div class="row q-col-gutter-md">
+                <div class="col">
+                    <q-select label="Export format" v-model="selected_format" outlined :options="formats" emit-value></q-select>
+                </div>
+                <div class="col q-mt-sm">
+                    <q-btn label="Export data" icon-right="file_download" @click="export_data"></q-btn>
+                </div>
+            </div>
 
-            <Line :chart-data="chartData" :chart-options="options" :height="200" />
+            <div class="row">
+                <div class="col">
+                    <q-tabs v-model="tab" class="text-primary">
+                        <q-tab name="stats" icon="description" label="Data" />
+                        <q-tab name="graph" icon="show_chart" label="Graph" />
+                    </q-tabs>
+                </div>
+            </div>
+
+            <div class="row q-mt-md">
+                <div class="col" v-if="tab == 'graph'">
+                    <MyGraph :data="graph_data"></MyGraph>
+                </div>
+                <div class="col" v-if="tab == 'stats'">
+                    <MyStats :data="fetched_data" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -49,74 +69,28 @@
 import { defineComponent, onBeforeMount, ref, watch } from "vue";
 import DateTimePicker from "@/components/common/DateTimePicker.vue";
 
-import { Line } from "vue-chartjs";
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale } from "chart.js";
+import { GetDevicesAttributes, FetchTelemetry, ExportTelemetry } from "@store/device";
+import { IAttribute, IDeviceAttributes } from "@/types/device";
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale);
-
-import { ChartData, ChartOptions } from "chart.js";
-
-import { GetDevicesAttributes, FetchTelemetry } from "@store/device";
-import { IDeviceAttributes } from "@/types/device";
-
-import "chartjs-adapter-moment";
 import { computed } from "@vue/reactivity";
-
+import MyGraph from "@components/data/graph.vue";
+import MyStats from "@components/data/stats.vue";
+import { json } from "stream/consumers";
 
 export default defineComponent({
-    components: { Line, DateTimePicker },
+    components: { DateTimePicker, MyGraph, MyStats },
     setup() {
-        const data: ChartData = {
-            datasets: [
-                {
-                    label: "Sample data",
-                    data: [
-                        { createdAt: "2022/01/01", value: 84 },
-                        { createdAt: "2022/02/01", value: 54 },
-                        { createdAt: "2022/03/01", value: 38 },
-                        { createdAt: "2022/04/01", value: 55 },
-                        { createdAt: "2022/05/01", value: 14 },
-                        { createdAt: "2022/06/01", value: 3 },
-                        { createdAt: "2022/07/01", value: 26 },
-                        { createdAt: "2022/08/01", value: 96 },
-                        { createdAt: "2022/09/01", value: 68 },
-                        { createdAt: "2022/10/01", value: 100 },
-                        { createdAt: "2022/11/01", value: 90 },
-                        { createdAt: "2022/12/01", value: 40 },
-                    ],
-                    borderColor: "#" + Math.round(0xffffff * Math.random()).toString(16),
-                    parsing: {
-                        xAxisKey: "createdAt",
-                        yAxisKey: "value",
-                    },
-                },
-            ],
-        };
-
-        const chartData = ref(data);
-
-        const opt: ChartOptions = {
-            scales: {
-                x: {
-                    type: "time",
-                },
-            },
-            elements: {
-                point: {
-                    radius: 1,
-                },
-            },
-        };
-
-        const options = ref(opt);
-
         let date_start = ref<Date | null>(null);
         let date_end = ref<Date | null>(null);
         let range = ref("Last day");
         let search = ref("");
 
-        let devices = ref<IDeviceAttributes[]>([]);
+        const attribute_list = ref<IDeviceAttributes[]>([]);
+        const fetched_data = ref<IDeviceAttributes[]>([]);
+
         let selected = ref<number[]>([]);
+
+        const tab = ref("stats");
 
         watch(
             range,
@@ -141,9 +115,17 @@ export default defineComponent({
         );
 
         const filtered_attributes = computed(() => {
-            return devices.value.filter((dev) => {
+            return attribute_list.value.filter((dev) => {
                 return dev.name.includes(search.value) || dev.attributes.find((a) => a.name.includes(search.value));
             });
+        });
+
+        const graph_data = computed(() => {
+            const attributes: IAttribute[] = [];
+            for (const dev of fetched_data.value) {
+                attributes.push(...dev.attributes);
+            }
+            return attributes;
         });
 
         function is_active(attr_id: number) {
@@ -164,32 +146,68 @@ export default defineComponent({
             let start = date_start.value as Date;
             let end = date_end.value as Date;
             const attributes = await FetchTelemetry(ids, start, end);
-
-
-            chartData.value.datasets = attributes.map((a: any) => {
-                return {
-                    label: a.name,
-                    data: a.Telemetry.filter((d: any) => d.value != null),
-                    borderColor: "#" + Math.round(0xffffff * Math.random()).toString(16),
-                    parsing: {
-                        xAxisKey: "createdAt",
-                        yAxisKey: "value",
-                    },
-                };
-            });
-
-            if (date_start.value) {
-                options.value!.scales!.x!.min = start;
-            }
-
-            if (date_end.value) options.value!.scales!.x!.max = end;
+            fetched_data.value = attributes;
         }
 
         onBeforeMount(async () => {
-            devices.value = await GetDevicesAttributes();
+            attribute_list.value = await GetDevicesAttributes();
         });
 
-        return { devices, click_attr, is_active, chartData, options, date_start, date_end, fetch_data, range, search, filtered_attributes };
+        const formats = ["json", "xml", "csv"];
+
+        const selected_format = ref<"xml" | "json" | "csv">("json");
+
+        async function export_data() {
+            let ids = [...selected.value];
+            let start = date_start.value as Date;
+            let end = date_end.value as Date;
+            const data = await ExportTelemetry(selected_format.value, ids, start, end);
+
+            if (selected_format.value == "xml") {
+                const url = window.URL.createObjectURL(new Blob([...data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "export.xml");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            else if (selected_format.value == "json") {
+                const url = window.URL.createObjectURL(new Blob([...JSON.stringify(data)]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "export.json");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }   else if (selected_format.value == "csv") {
+                const url = window.URL.createObjectURL(new Blob([...data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "export.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+        }
+
+        return {
+            graph_data,
+            click_attr,
+            is_active,
+            date_start,
+            date_end,
+            fetch_data,
+            range,
+            search,
+            filtered_attributes,
+            tab,
+            fetched_data,
+            formats,
+            selected_format,
+            export_data,
+        };
     },
 });
 </script>

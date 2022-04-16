@@ -121,8 +121,23 @@ export async function GetDevicesAttributes() {
     }
 }
 
+export async function ExportTelemetry(export_type: "xml" | "json" | "csv", attributes: number[], date_start?: Date, date_end?: Date) {
+    let req = await api.get(`/device/telemetry/export/${export_type}`, {
+        params: {
+            attr: [...attributes],
+            date_end: date_end,
+            date_start: date_start
+        },
+        paramsSerializer: params => {
+            return qs.stringify(params, {arrayFormat: 'repeat'})
+          }
+    });
+
+    return req.data;
+}
+
 export async function FetchTelemetry(attributes: number[], date_start?: Date, date_end?: Date) {
-    let req = await api.get("/device/telemetry", {
+    let req = await api.get<IDeviceAttributes[]>("/device/telemetry", {
         params: {
             attr: [...attributes],
             date_end: date_end,

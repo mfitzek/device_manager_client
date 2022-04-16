@@ -1,75 +1,60 @@
 <template>
-    <div>
-        <Line :chart-data="chartData" :chart-options="options" :height="200" />
+    <div class="row q-mt-sm q-col-gutter-md" v-for="d of my_data">
+        <div class="col">
+            Device: {{ d.name }}
+            <div class="row q-mb-sm">
+                <div class="col">Attribute</div>
+                <div class="col">Type</div>
+                <div class="col">Collected</div>
+                <div class="col">Last date</div>
+                <div class="col">Last value</div>
+            </div>
+            <hr />
+            <div class="row" v-for="a of d.attributes">
+                <div class="col">{{ a.name }}</div>
+                <div class="col">{{ a.type }}</div>
+                <div class="col">{{ a.telemetry?.length }}</div>
+                <div class="col">{{ last_value(a).date }}</div>
+                <div class="col">{{ last_value(a).value }}</div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-
-
-import { Line } from "vue-chartjs";
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale } from "chart.js";
-
-ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale);
-
-import { ChartData, ChartOptions } from "chart.js";
-
-import "chartjs-adapter-moment";
-
+import { defineComponent, ref, PropType } from "vue";
+import { IAttribute, IDeviceAttributes } from "@/types/device";
+import { computed } from "@vue/reactivity";
+import { api } from "@/store/device";
 
 export default defineComponent({
-    components: { Line},
-    setup () {
-        const data: ChartData = {
-            datasets: [
-                {
-                    label: "Sample data",
-                    data: [
-                        { createdAt: "2022/01/01", value: 84 },
-                        { createdAt: "2022/02/01", value: 54 },
-                        { createdAt: "2022/03/01", value: 38 },
-                        { createdAt: "2022/04/01", value: 55 },
-                        { createdAt: "2022/05/01", value: 14 },
-                        { createdAt: "2022/06/01", value: 3 },
-                        { createdAt: "2022/07/01", value: 26 },
-                        { createdAt: "2022/08/01", value: 96 },
-                        { createdAt: "2022/09/01", value: 68 },
-                        { createdAt: "2022/10/01", value: 100 },
-                        { createdAt: "2022/11/01", value: 90 },
-                        { createdAt: "2022/12/01", value: 40 },
-                    ],
-                    borderColor: "#" + Math.round(0xffffff * Math.random()).toString(16),
-                    parsing: {
-                        xAxisKey: "createdAt",
-                        yAxisKey: "value",
-                    },
-                },
-            ],
-        };
+    props: {
+        data: Object as PropType<IDeviceAttributes[]>,
+    },
+    setup(props) {
+       
 
-        const chartData = ref(data);
+        const my_data = computed(() => {
+            return props.data?.filter((d) => d.attributes.length);
+        });
 
-        const opt: ChartOptions = {
-            scales: {
-                x: {
-                    type: "time",
-                },
-            },
-            elements: {
-                point: {
-                    radius: 1,
-                },
-            },
-        };
+        function last_value(attr: IAttribute) {
+            if (attr.telemetry?.length) {
+                const last = attr.telemetry[attr.telemetry.length - 1];
+                return {
+                    date: last.createdAt?.toLocaleString(),
+                    value: last.value,
+                };
+            }
+            return {
+                date: "NA",
+                value: "NA",
+            };
+        }
 
-        const options = ref(opt);
-
-        return {chartData, options}
-    }
-})
+        return {  my_data, last_value };
+    },
+});
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
