@@ -17,7 +17,7 @@
     <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
       <!-- drawer content -->
       <q-list>
-        <q-item v-for="(link, index) in links_filtered" :key="index" clickable @click="link.click">
+        <q-item v-for="(link, index) in links_filtered" :key="index" :to="link.route">
           <q-item-section>{{link.name}}</q-item-section>
           <q-item-section avatar>
             <q-icon :name="link.icon"></q-icon>
@@ -54,9 +54,9 @@ export default defineComponent({
     const router = useRouter();
 
     const links = [
-      {name: "Device", icon: "fas fa-microchip", click: ()=> router.push({name: "DeviceDetail"}), auth_level: 0},
-      {name: "Data", icon: "fas fa-database", click: ()=> router.push({name: "DataMain"}), auth_level: 0},
-      {name: "Settings", icon: "settings", click: ()=> router.push({name: "DatabaseSettings"}), auth_level: 2},
+      {name: "Device", icon: "fas fa-microchip", route: {name: "DeviceDetail"}, auth_level: 0},
+      {name: "Data", icon: "fas fa-database", route:{name: "DataMain"}, auth_level: 0},
+      {name: "Settings", icon: "settings", route:{name: "DatabaseSettings"}, auth_level: 2},
     ]
 
     const links_filtered = computed(()=>{

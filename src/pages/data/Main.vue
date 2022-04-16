@@ -34,6 +34,12 @@
                     <q-btn color="primary" @click="fetch_data()" icon-right="refresh">Refresh</q-btn>
                 </div>
             </div>
+
+              <q-tabs class="text-primary">
+                        <q-tab name="stats" icon="description" label="Data" />
+                        <q-tab name="graph" icon="show_chart" label="Graph"  />
+                    </q-tabs>
+
             <Line :chart-data="chartData" :chart-options="options" :height="200" />
         </div>
     </div>
@@ -44,18 +50,18 @@ import { defineComponent, onBeforeMount, ref, watch } from "vue";
 import DateTimePicker from "@/components/common/DateTimePicker.vue";
 
 import { Line } from "vue-chartjs";
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, Plugin, TimeSeriesScale } from "chart.js";
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale } from "chart.js";
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, PointElement, CategoryScale, TimeScale, TimeSeriesScale);
 
 import { ChartData, ChartOptions } from "chart.js";
 
 import { GetDevicesAttributes, FetchTelemetry } from "@store/device";
-import { IAttribute, IDeviceAttributes } from "@/types/device";
+import { IDeviceAttributes } from "@/types/device";
 
 import "chartjs-adapter-moment";
 import { computed } from "@vue/reactivity";
-import { date } from "quasar";
+
 
 export default defineComponent({
     components: { Line, DateTimePicker },
@@ -153,14 +159,11 @@ export default defineComponent({
             }
         }
 
-        let colors = ["#FF1000", "#0010FF", "#00FF00"];
-
         async function fetch_data() {
             let ids = [...selected.value];
             let start = date_start.value as Date;
             let end = date_end.value as Date;
             const attributes = await FetchTelemetry(ids, start, end);
-            let i = 0;
 
 
             chartData.value.datasets = attributes.map((a: any) => {

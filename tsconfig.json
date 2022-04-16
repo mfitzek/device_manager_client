@@ -54,6 +54,9 @@
             ],
             "@settings/*": [
                 "./src/pages/settings/*"
+            ],
+            "@data/*": [
+                "./src/components/data/*"
             ]
         }
     },
